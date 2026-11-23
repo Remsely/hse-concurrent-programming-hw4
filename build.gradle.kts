@@ -30,5 +30,11 @@ tasks.register<JavaExec>("loadProbe") {
     javaLauncher = javaToolchains.launcherFor(java.toolchain)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass = "edu.hse.concurrency.cache.CacheLoadProbe"
-    args(providers.gradleProperty("workers").orElse("8").get())
+    val workers = providers.gradleProperty("workers")
+    args(workers.orElse("").get())
+    doFirst {
+        if (workers.orNull == null) {
+            throw GradleException("Укажите число рабочих потоков: ./gradlew loadProbe -Pworkers=N")
+        }
+    }
 }
